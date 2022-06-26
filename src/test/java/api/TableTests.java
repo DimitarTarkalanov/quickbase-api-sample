@@ -6,6 +6,7 @@ import api.records.*;
 import api.tables.Table;
 import api.tables.TablesRequest;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -15,6 +16,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class TableTests {
+    private static final String BASE_URI = "https://api.quickbase.com/v1";
+    private static final String DELETION_FIELD_ID = "3";
+    private static final String TABLE_ID = "bsgdugagy";
+    private final List<Integer> recordDeletionList = new ArrayList<>();
 
     @DataProvider(name = "setupInsertRecord")
     public Object[][] setupInsertRecord() {
@@ -31,7 +36,7 @@ public class TableTests {
         );
 
         return new Object[][]{
-                {"https://api.quickbase.com/v1", "bsgdugaef", "Tasks", Collections.singletonList(taskRecord)},
+                {BASE_URI, "bsgdugaef", "Tasks", Collections.singletonList(taskRecord)},
         };
     }
 
@@ -50,8 +55,7 @@ public class TableTests {
 
         Records responseRecords = insertRecords(baseUri, tableId, expectedRecordDataList, fieldIds);
 
-        //ToDo Include the record ids in the assertion
-        responseRecords.getData().forEach(map -> map.remove("3"));
+        addRecordsForDeletion(responseRecords);
 
         List<Map<String, FieldValue>> actualRecordDataList = responseRecords.getData();
         Assert.assertEquals(actualRecordDataList, expectedRecordDataList, "The response records data doesn't match the payload records data!");
@@ -63,6 +67,29 @@ public class TableTests {
 
         expectedRecordDataList.forEach(recordData ->
                 Assert.assertTrue(currentTableRecords.getData().stream().anyMatch(data -> data.equals(recordData)), "The inserted records are not presented in the table!"));
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        recordDeletionList.forEach(
+                record -> {
+                    RecordsQueryPayload payload = new RecordsQueryPayload();
+                    payload.setFrom(TABLE_ID);
+                    String query = String.format("{%s.EX.'%d'}", DELETION_FIELD_ID, record);
+                    payload.setWhere(query);
+                    RecordsRequest request = new RecordsRequest(BASE_URI, 200, payload);
+                    int numberDeleted = request.executeRequest().getBody().jsonPath().getInt("numberDeleted");
+                    Assert.assertEquals(numberDeleted, 1);
+                }
+        );
+    }
+
+    private void addRecordsForDeletion(Records records) {
+        records.getData().forEach(map -> {
+            recordDeletionList.add(((Double) map.get(DELETION_FIELD_ID).getValue()).intValue());
+            //ToDo Include the record ids in the assertion
+            map.remove(DELETION_FIELD_ID);
+        });
     }
 
     private Table getAppTableByName(String baseUri, String appId, String tableName) {
@@ -114,7 +141,7 @@ public class TableTests {
         payload.setData(dataRecords);
         payload.setFieldsToReturn(fieldIds);
 
-        RecordsRequest request = new RecordsRequest(baseUri, 200, Request.RequestMethod.POST, payload);
+        RecordsRequest request = new RecordsRequest(baseUri, 200, payload);
         return request.executeRequest().getBody().as(Records.class);
     }
 }
