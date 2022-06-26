@@ -3,11 +3,14 @@ package api.fields;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
 @NoArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
+@ToString
 public class Field {
     private Integer id;
     private String label;
@@ -26,7 +29,9 @@ public class Field {
     private Boolean addToForms;
 
     @NoArgsConstructor
-    @Getter @Setter
+    @Getter
+    @Setter
+    @ToString
     public class Permission {
         private String permissionType;
         private String role;
@@ -34,7 +39,9 @@ public class Field {
     }
 
     @NoArgsConstructor
-    @Getter @Setter
+    @Getter
+    @Setter
+    @ToString
     public class Properties {
         private Boolean primaryKey;
         private Boolean foreignKey;

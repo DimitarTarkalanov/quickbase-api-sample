@@ -14,6 +14,7 @@ public class TablesRequest extends Request {
         this.appId = appId;
     }
 
+    @Override
     protected RequestSpecification initGetRequest() {
         return super.initRequest(
                 Map.of(

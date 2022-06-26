@@ -3,9 +3,12 @@ package api.tables;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
+@ToString
 public class Table {
     private String alias;
     private String created;

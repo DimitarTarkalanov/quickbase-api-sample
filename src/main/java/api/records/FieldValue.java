@@ -4,10 +4,10 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
 @ToString
 @EqualsAndHashCode
 public class FieldValue {
     private Object value;
-
 }
