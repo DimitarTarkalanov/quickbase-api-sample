@@ -1,11 +1,13 @@
 package api.records;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter @Setter
+@ToString
+@EqualsAndHashCode
 public class FieldValue {
     private Object value;
+
 }
