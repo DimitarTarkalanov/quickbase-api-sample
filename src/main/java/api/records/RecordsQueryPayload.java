@@ -12,4 +12,5 @@ import java.util.List;
 public class RecordsQueryPayload implements RequestPayLoad {
     private String from;
     private List<Integer> select;
+    private String where;
 }
